@@ -665,7 +665,8 @@ def testimoni():
 
 CDN_SIZES = {
     "card": "f_auto,q_auto,c_fill,g_auto,ar_16:10,w_640",
-    "gal": "f_auto,q_auto,h_900",
+    "gal": "f_auto,q_auto,c_limit,w_900,h_900",
+    "zoom": "f_auto,q_auto,c_limit,w_1800,h_1800",
     "admin": "f_auto,q_auto,c_fill,g_auto,ar_1:1,w_240",
 }
 

@@ -83,6 +83,37 @@
     <p class="more" data-reveal>{{ btn(url_for('layanan'), 'Baca detail tiap layanan', 'ghost') }}</p>
   </section>
 
+  {% if kat_items %}
+  <!-- KATALOG -->
+  <section class="sec wrap">
+    <div class="head" data-reveal>
+      <h2>Katalog siap pakai</h2>
+      <p class="sub">Aplikasi dan website yang sudah jadi, tinggal beli dan kepemilikannya pindah ke kamu.</p>
+    </div>
+    <ul class="lrows" data-reveal>
+      {% for p in kat_items %}
+      <li>
+        <a class="lr" href="{{ url_for('katalog_detail', slug=p.slug) }}">
+          <span class="lr-img">
+            {% if p.images %}<img src="{{ p.images[0]|cdn('card') }}" alt="" width="208" height="130" loading="lazy">{% endif %}
+          </span>
+          <span class="lr-body">
+            <span class="lr-cat">{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}{% if p.percent %}<b class="lr-off">-{{ p.percent }}%</b>{% endif %}</span>
+            <span class="lr-title">{{ p.title }}</span>
+          </span>
+          <span class="lr-price">
+            {% if p.percent %}<s>{{ p.price|rupiah }}</s>{% endif %}
+            <strong>{{ p.final_price|rupiah }}</strong>
+          </span>
+          <svg class="lr-go" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="more" data-reveal>{{ btn(url_for('katalog'), 'Lihat semua ' ~ kat_total ~ ' produk' if kat_total > kat_items|length else 'Buka katalog', 'ghost') }}</p>
+  </section>
+  {% endif %}
+
   <!-- HARGA -->
   <section class="sec wrap">
     <div class="head" data-reveal>

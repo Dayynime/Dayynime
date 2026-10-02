@@ -35,7 +35,7 @@ def configured():
     return bool(SUPABASE_URL and SUPABASE_KEY)
 
 
-def _request(method, params=None, body=None, prefer=None):
+def _request(method, params=None, body=None, prefer=None, timeout=8):
     if not configured():
         raise StoreError("SUPABASE_URL / SUPABASE_SERVICE_KEY belum diisi")
     url = f"{SUPABASE_URL}/rest/v1/{TABLE}"
@@ -51,7 +51,7 @@ def _request(method, params=None, body=None, prefer=None):
     data = json.dumps(body).encode("utf-8") if body is not None else None
     req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=8) as res:
+        with urllib.request.urlopen(req, timeout=timeout) as res:
             raw = res.read()
     except urllib.error.HTTPError as err:
         detail = err.read()[:300].decode("utf-8", "replace")
@@ -61,11 +61,12 @@ def _request(method, params=None, body=None, prefer=None):
     return json.loads(raw) if raw else None
 
 
-def list_public():
+def list_public(timeout=8):
     """Semua produk untuk publik: yang masih tersedia di atas, lalu yang terjual."""
     return _request(
         "GET",
         {"select": PUBLIC_COLS, "order": "status.asc,created_at.desc"},
+        timeout=timeout,
     ) or []
 
 

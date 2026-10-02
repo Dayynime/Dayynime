@@ -516,8 +516,11 @@ def inject_globals():
 def index():
     categories = categories_view()
     prices = [c["min_price"] for c in categories if c["min_price"]]
-    return render_template(
+    kat_items, kat_total = home_catalog()
+    page = render_template(
         "index.html",
+        kat_items=kat_items,
+        kat_total=kat_total,
         services=SERVICES,
         stack=STACK,
         categories=categories,
@@ -526,6 +529,19 @@ def index():
         hero_points=HERO_POINTS,
         hero_chips=HERO_CHIPS,
     )
+    return cached(make_response(page), ok=bool(kat_items) or not supa.configured())
+
+
+def home_catalog(limit=5):
+    """Maksimal `limit` produk tersedia untuk daftar di beranda. Gagal diam-diam: beranda tetap tampil."""
+    if not supa.configured():
+        return [], 0
+    try:
+        rows = [decorate(r) for r in supa.list_public(timeout=3)]
+    except supa.StoreError:
+        return [], 0
+    ready = [p for p in rows if not p["sold"]]
+    return ready[:limit], len(ready)
 
 
 @app.route("/layanan")

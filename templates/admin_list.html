@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Admin katalog | {{ site.name }}{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Admin katalog</h1>
+  <div class="row adm-top">
+    {{ btn(url_for('admin_new'), 'Tambah produk', 'solid') }}
+    {{ btn(url_for('katalog'), 'Lihat halaman publik', 'ghost') }}
+    <form method="post" action="{{ url_for('admin_logout') }}">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <button class="btn ghost" type="submit">Keluar</button>
+    </form>
+  </div>
+</section>
+
+<section class="sec wrap">
+  {% for m in get_flashed_messages() %}<p class="flash" role="status">{{ m }}</p>{% endfor %}
+  {% if error %}<p class="flash bad" role="alert">{{ error }}</p>{% endif %}
+
+  {% if items %}
+  <ul class="adm-list">
+    {% for p in items %}
+    <li class="adm-row">
+      <div class="adm-thumb">
+        {% if p.images %}<img src="{{ p.images[0]|cdn('admin') }}" alt="" width="72" height="72" loading="lazy">{% endif %}
+      </div>
+      <div class="adm-main">
+        <p class="adm-title">{{ p.title }}</p>
+        <p class="adm-meta">
+          <span class="stat {{ 'is-sold' if p.sold else 'is-ok' }}">{{ 'Terjual' if p.sold else 'Tersedia' }}</span>
+          {{ 'Aplikasi' if p.category == 'aplikasi' else 'Website' }}
+          &middot; {{ p.final_price|rupiah }}{% if p.percent %} (diskon {{ p.percent }}%){% endif %}
+          &middot; {{ p.images|length }} foto
+        </p>
+        {% if p.buyer_note %}<p class="adm-note">Catatan: {{ p.buyer_note }}</p>{% endif %}
+      </div>
+      <div class="adm-actions">
+        <a class="btn ghost sm" href="{{ url_for('admin_edit', pid=p.id) }}">Edit</a>
+        <a class="btn ghost sm" href="{{ url_for('katalog_detail', slug=p.slug) }}" target="_blank" rel="noopener">Lihat</a>
+        <form method="post" action="{{ url_for('admin_status', pid=p.id) }}">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+          <input type="hidden" name="status" value="{{ 'available' if p.sold else 'sold' }}">
+          <button class="btn solid sm" type="submit">{{ 'Tandai tersedia' if p.sold else 'Tandai terjual' }}</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_delete', pid=p.id) }}" data-confirm="Hapus {{ p.title }}? Ini tidak bisa dibatalkan.">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+          <button class="btn ghost sm danger" type="submit">Hapus</button>
+        </form>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% elif not error %}
+  <div class="empty">
+    <h3>Belum ada produk</h3>
+    <p>Tambahkan produk pertama, lalu muncul di halaman katalog.</p>
+    <div class="row">{{ btn(url_for('admin_new'), 'Tambah produk', 'solid') }}</div>
+  </div>
+  {% endif %}
+</section>
+<script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>
+{% endblock %}

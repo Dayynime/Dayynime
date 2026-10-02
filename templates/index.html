@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, tick %}
+{% block description %}Jasa pembuatan website dan aplikasi anime oleh developer Zenime. {% if min_price %}Harga mulai dari {{ min_price|rupiah }}.{% endif %}{% endblock %}
+
+{% block content %}
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <h1 aria-label="Website dan aplikasi anime, dibuat langsung oleh developer Zenime.">
+        {% for w in 'Website dan aplikasi anime, dibuat langsung oleh developer Zenime.'.split() %}<span class="w" aria-hidden="true" style="--i:{{ loop.index0 }}"><span>{{ w }}</span></span> {% endfor %}
+      </h1>
+      <p class="lead">Dari situs nonton sederhana sampai sistem akun, favorit, dan komentar{% if min_price %}. Mulai dari {{ min_price|rupiah }}{% endif %}.</p>
+      <div class="actions">
+        {{ btn(url_for('pesan'), 'Pesan sekarang', 'solid') }}
+        {{ btn(url_for('harga'), 'Lihat daftar harga', 'ghost') }}
+      </div>
+      <ul class="points">
+        {% for p in hero_points %}<li>{{ tick() }}{{ p }}</li>{% endfor %}
+      </ul>
+    </div>
+
+    <figure class="stage" id="stage">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="phone" id="phone">
+        <div class="screen">
+          <img src="{{ url_for('static', filename='img/zenime-profile.jpg') }}" width="480" height="752" alt="Beranda aplikasi Zenime dengan akun premium, ZCoin, dan banner anime" fetchpriority="high">
+        </div>
+      </div>
+      <ul class="chips" aria-hidden="true">
+        {% for c in hero_chips %}<li class="chip chip-{{ loop.index }}">{{ c }}</li>{% endfor %}
+      </ul>
+      <figcaption>Zenime, aplikasi streaming anime buatan sendiri</figcaption>
+    </figure>
+  </section>
+
+  <!-- STACK -->
+  <section class="stack" aria-label="Teknologi yang dipakai">
+    <div class="track">
+      {% for _ in range(2) %}
+      <ul class="lane"{% if loop.index == 2 %} aria-hidden="true"{% endif %}>
+        {% for t in stack %}<li>{{ t }}</li>{% endfor %}
+      </ul>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- LAYANAN -->
+  <section class="sec wrap">
+    <div class="head" data-reveal>
+      <h2>Yang bisa dikerjakan</h2>
+      <p class="sub">Tiga jenis pekerjaan, semuanya dibuat dari nol sesuai kebutuhan.</p>
+    </div>
+    <div class="bento">
+      {% for s in services %}
+      <article class="tile t-{{ s.kind }} spot" data-reveal style="--d:{{ loop.index0 * 90 }}ms">
+        <div class="tile-copy">
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </div>
+        {% if s.kind == 'web' %}
+        <div class="mock-browser" aria-hidden="true">
+          <div class="mb-bar"><i></i><i></i><i></i><span></span></div>
+          <div class="mb-body">
+            <div class="mb-hero"></div>
+            <div class="mb-grid"><b></b><b></b><b></b><b></b><b></b><b></b></div>
+          </div>
+        </div>
+        {% elif s.kind == 'app' %}
+        <div class="mock-phone" aria-hidden="true">
+          <div class="mp-top"></div>
+          <div class="mp-hero"></div>
+          <div class="mp-row"><b></b><b></b><b></b></div>
+          <div class="mp-row"><b></b><b></b><b></b></div>
+        </div>
+        {% else %}
+        <ul class="tags">
+          {% for t in s.tags %}<li style="--k:{{ loop.index0 }}">{{ t }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    <p class="more" data-reveal>{{ btn(url_for('layanan'), 'Baca detail tiap layanan', 'ghost') }}</p>
+  </section>
+
+  <!-- HARGA -->
+  <section class="sec wrap">
+    <div class="head" data-reveal>
+      <h2>Harga mulai dari</h2>
+      <p class="sub">Harga dipisah per jenis produk, lengkap dengan isi tiap paket.</p>
+    </div>
+    <div class="from">
+      {% for c in categories %}
+      <a class="from-card spot" href="{{ url_for('harga', jenis=c.id) }}" data-reveal style="--d:{{ loop.index0 * 90 }}ms">
+        <h3>{{ c.label }}</h3>
+        {% if c.min_price %}<p class="fp"><small>mulai</small>{{ c.min_price|rupiah }}</p>{% else %}<p class="fp ask">Hubungi untuk harga</p>{% endif %}
+        <p>{{ c.intro }}</p>
+        <span class="go">Lihat {{ c.packages|length }} paket {{ c.label|lower }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- KARYA -->
+  <section class="sec wrap">
+    <div class="head" data-reveal>
+      <h2>Karya</h2>
+      <p class="sub">Contoh nyata dari yang bisa dibuat.</p>
+    </div>
+    {% for pr in projects[:1] %}
+    <article class="work spot" data-reveal>
+      <div class="work-copy">
+        <div class="work-id">
+          <img src="{{ url_for('static', filename='img/zenime-logo.jpg') }}" width="68" height="68" alt="" loading="lazy">
+          <h3>{{ pr.name }}</h3>
+        </div>
+        <p class="desc">{{ pr.text }}</p>
+        <div class="row">
+          {{ btn(url_for('karya_detail', slug=pr.slug), 'Lihat detail', 'solid') }}
+          {{ btn(pr.url, pr.cta, 'ghost', True) }}
+        </div>
+      </div>
+      <ul class="feat">
+        {% for f in pr.features %}<li>{{ tick() }}{{ f }}</li>{% endfor %}
+      </ul>
+    </article>
+    {% endfor %}
+  </section>
+
+  <!-- CTA -->
+  <section id="kontak" class="sec wrap">
+    <div class="cta" data-reveal>
+      <h2>Ada ide anime yang mau diwujudkan?</h2>
+      <p>Pilih paket dan tulis kebutuhanmu. Pesanan terisi otomatis di WhatsApp.</p>
+      <div class="actions">
+        {{ btn(url_for('pesan'), 'Buat pesanan', 'solid light') }}
+        {{ btn(wa_general, 'Tanya dulu di WhatsApp', 'ghost on-dark', True) }}
+      </div>
+    </div>
+  </section>
+{% endblock %}

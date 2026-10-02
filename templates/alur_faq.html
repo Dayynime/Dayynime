@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Alur pemesanan dan FAQ | {{ site.name }}{% endblock %}
+{% block description %}Empat langkah dari chat pertama sampai hasil jadi, plus jawaban untuk pertanyaan yang sering muncul.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Alur pemesanan dan FAQ</h1>
+  <p class="sub">Empat langkah dari chat pertama sampai hasil jadi, dan jawaban untuk pertanyaan yang sering muncul.</p>
+</section>
+
+<section id="alur" class="sec wrap">
+  <div class="head" data-reveal>
+    <h2>Alur pemesanan</h2>
+  </div>
+  <ol class="steps" id="steps">
+    {% for title, text in steps %}
+    <li style="--d:{{ loop.index0 * 140 }}ms">
+      <span class="n">{{ loop.index }}</span>
+      <h3>{{ title }}</h3>
+      <p>{{ text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section id="faq" class="sec wrap">
+  <div class="head" data-reveal>
+    <h2>Pertanyaan yang sering muncul</h2>
+  </div>
+  <div class="faq" data-reveal>
+    {% for q, a in faq %}
+    <details>
+      <summary>{{ q }}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6"/></svg></summary>
+      <p>{{ a }}</p>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="kontak" class="sec wrap">
+  <div class="cta" data-reveal>
+    <h2>Pertanyaanmu belum terjawab?</h2>
+    <p>Tanyakan langsung lewat WhatsApp, atau langsung buat pesanan.</p>
+    <div class="actions">
+      {{ btn(wa_general, 'Tanya di WhatsApp', 'solid light', True) }}
+      {{ btn(url_for('pesan'), 'Buat pesanan', 'ghost on-dark') }}
+    </div>
+  </div>
+</section>
+{% endblock %}

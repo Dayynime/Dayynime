@@ -1,0 +1,5 @@
+{% macro btn(href, label, kind='ghost', ext=False) -%}
+<a class="btn {{ kind }}" href="{{ href }}"{% if ext %} target="_blank" rel="noopener"{% endif %}>{{ label }}</a>
+{%- endmacro %}
+{% macro tick() -%}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l3 3 6-6.4"/></svg>{%- endmacro %}
+{% macro info_icon() -%}<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.2v4M8 4.9v.1"/></svg>{%- endmacro %}

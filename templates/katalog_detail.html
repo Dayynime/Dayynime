@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}{{ p.title }} | Katalog | {{ site.name }}{% endblock %}
+{% block description %}{{ (p.description or p.title)|replace('\n', ' ')|truncate(150) }}{% endblock %}
+{% block head_extra %}{% if p.images %}<meta property="og:image" content="{{ p.images[0]|cdn('card') }}">{% endif %}{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <a class="back" href="{{ url_for('katalog') }}">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5"/></svg>
+    Semua produk
+  </a>
+
+  <div class="pd">
+    <div class="pd-gallery">
+      <figure class="pd-main{% if p.sold %} sold{% endif %}">
+        {% if p.images %}
+        <img id="gal-main" src="{{ p.images[0]|cdn('full') }}" alt="{{ p.title }}" fetchpriority="high">
+        {% else %}
+        <div class="item-ph" aria-hidden="true"></div>
+        {% endif %}
+        {% if p.sold %}<span class="tag tag-sold">Terjual</span>{% elif p.percent %}<span class="tag tag-off">-{{ p.percent }}%</span>{% endif %}
+      </figure>
+      {% if p.images|length > 1 %}
+      <ul class="pd-strip" id="gal-strip" aria-label="Foto produk">
+        {% for img in p.images %}
+        <li>
+          <button type="button" class="pd-th" data-full="{{ img|cdn('full') }}" aria-label="Lihat foto {{ loop.index }}"{% if loop.first %} aria-current="true"{% endif %}>
+            <img src="{{ img|cdn('strip') }}" alt="" width="160" height="160" loading="lazy">
+          </button>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <div class="pd-info">
+      <span class="item-cat">{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}</span>
+      <h1>{{ p.title }}</h1>
+
+      <p class="price price-lg">
+        {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}
+        <strong>{{ p.final_price|rupiah }}</strong>
+        {% if p.percent and not p.sold %}<span class="off">Hemat {{ p.percent }}%</span>{% endif %}
+      </p>
+
+      {% if p.sold %}
+      <p class="pd-status is-sold">Sudah terjual</p>
+      <p class="pd-note">Produk ini sudah punya pemilik baru. Lihat produk lain, atau pesan yang dibuat serupa.</p>
+      <div class="row">
+        {{ btn(url_for('katalog'), 'Lihat produk lain', 'solid') }}
+        {{ btn(url_for('pesan', jenis='app' if p.category == 'aplikasi' else 'web'), 'Pesan yang serupa', 'ghost') }}
+      </div>
+      {% else %}
+      <p class="pd-status is-ok">Tersedia</p>
+      <div class="row">
+        {{ btn(buy_link, 'Beli lewat WhatsApp', 'solid', True) }}
+        {% if p.demo_url %}{{ btn(p.demo_url, 'Lihat demo', 'ghost', True) }}{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% if p.description %}
+<section class="sec wrap">
+  <div class="head" data-reveal><h2>Tentang produk ini</h2></div>
+  <div class="desc-full" data-reveal>{{ p.description }}</div>
+</section>
+{% endif %}
+
+{% if not p.sold %}
+<section class="sec wrap">
+  <div class="head" data-reveal><h2>Cara beli dan pindah kepemilikan</h2></div>
+  <ol class="steps" id="steps">
+    {% for title, text in steps %}
+    <li style="--d:{{ loop.index0 * 140 }}ms">
+      <span class="n">{{ loop.index }}</span>
+      <h3>{{ title }}</h3>
+      <p>{{ text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+<section id="kontak" class="sec wrap">
+  <div class="cta" data-reveal>
+    {% if p.sold %}
+    <h2>Cari yang lain?</h2>
+    <p>Masih ada produk jadi lain di katalog, atau kami buatkan yang baru.</p>
+    <div class="actions">
+      {{ btn(url_for('katalog'), 'Lihat katalog', 'solid light') }}
+      {{ btn(url_for('pesan'), 'Buat pesanan', 'ghost on-dark') }}
+    </div>
+    {% else %}
+    <h2>Masih ada pertanyaan?</h2>
+    <p>Tanyakan dulu sebelum beli. Kami jawab lewat WhatsApp.</p>
+    <div class="actions">
+      {{ btn(buy_link, 'Beli lewat WhatsApp', 'solid light', True) }}
+      {{ btn(wa_general, 'Tanya dulu', 'ghost on-dark', True) }}
+    </div>
+    {% endif %}
+  </div>
+</section>
+<script src="{{ url_for('static', filename='js/katalog.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Testimoni | {{ site.name }}{% endblock %}
+{% block description %}Testimoni dan bukti transaksi pelanggan Dayynime.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Testimoni</h1>
+  <p class="sub">{% if testimonials or bukti %}Kata pelanggan dan bukti transaksi. Nama dan data pribadi pelanggan disamarkan.{% else %}Kata pelanggan akan tampil di sini.{% endif %}</p>
+</section>
+
+{% if testimonials %}
+<section class="sec wrap">
+  <div class="quotes">
+    {% for t in testimonials %}
+    <figure class="quote" data-reveal style="--d:{{ loop.index0 * 90 }}ms">
+      <blockquote>{{ t.teks }}</blockquote>
+      <figcaption><strong>{{ t.nama }}</strong>{% if t.produk %}{{ t.produk }}{% endif %}</figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if bukti %}
+<section class="sec wrap">
+  <div class="head" data-reveal>
+    <h2>Bukti transaksi</h2>
+    <p class="sub">Tangkapan notifikasi pembayaran dari pelanggan. Klik gambar untuk memperbesar.</p>
+  </div>
+  <ul class="proofs" data-reveal>
+    {% for f in bukti %}
+    <li>
+      <a href="{{ url_for('static', filename='img/bukti/' ~ f) }}" target="_blank" rel="noopener">
+        <img src="{{ url_for('static', filename='img/bukti/' ~ f) }}" alt="Bukti transaksi {{ loop.index }}" loading="lazy">
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if not testimonials and not bukti %}
+<section class="sec wrap">
+  <div class="empty">
+    <h2 class="h-sm">Belum ada testimoni yang ditampilkan</h2>
+    <p>Jadilah pelanggan berikutnya, atau lihat dulu karya yang sudah dibuat.</p>
+    <div class="row">
+      {{ btn(url_for('pesan'), 'Buat pesanan', 'solid') }}
+      {{ btn(url_for('karya'), 'Lihat karya', 'ghost') }}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

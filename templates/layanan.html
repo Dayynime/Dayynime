@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, tick %}
+{% block title %}Layanan | {{ site.name }}{% endblock %}
+{% block description %}Layanan pembuatan website streaming anime, aplikasi Android anime, serta fitur komunitas dan premium.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Layanan</h1>
+  <p class="sub">Tiga jenis pekerjaan, semuanya dibuat dari nol sesuai kebutuhan. Harga tiap paket ada di halaman harga.</p>
+</section>
+
+<section class="sec wrap">
+  {% for s in services %}
+  <article class="svc" id="{{ s.kind }}" data-reveal>
+    <div class="svc-main">
+      <h2>{{ s.title }}</h2>
+      <p class="who">{{ s.text }}</p>
+      <p class="who">{{ s.who }}</p>
+      <div class="row">
+        {% if s.jenis %}
+          {{ btn(url_for('harga', jenis=s.jenis), 'Lihat harga', 'solid') }}
+          {{ btn(url_for('pesan', jenis=s.jenis), 'Pesan', 'ghost') }}
+        {% else %}
+          {{ btn(url_for('pesan', fitur=community_features), 'Tambahkan saat memesan', 'solid') }}
+          {{ btn(url_for('harga'), 'Lihat harga', 'ghost') }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="svc-side">
+      <ul class="feat">
+        {% for f in s.includes %}<li>{{ tick() }}{{ f }}</li>{% endfor %}
+      </ul>
+      {% if s.example %}<p class="example">{{ s.example }}</p>{% endif %}
+      <ul class="pills" aria-label="Teknologi">
+        {% for t in s.tech %}<li>{{ t }}</li>{% endfor %}
+      </ul>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<section id="kontak" class="sec wrap">
+  <div class="cta" data-reveal>
+    <h2>Belum yakin butuh yang mana?</h2>
+    <p>Ceritakan idemu di WhatsApp, nanti dibantu pilih yang paling pas.</p>
+    <div class="actions">
+      {{ btn(wa_general, 'Tanya di WhatsApp', 'solid light', True) }}
+      {{ btn(url_for('karya'), 'Lihat karya', 'ghost on-dark') }}
+    </div>
+  </div>
+</section>
+{% endblock %}

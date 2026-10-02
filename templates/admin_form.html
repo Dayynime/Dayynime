@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit produk' if product else 'Tambah produk' }} | Admin | {{ site.name }}{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <a class="back" href="{{ url_for('admin_index') }}">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5"/></svg>
+    Semua produk
+  </a>
+  <h1>{{ 'Edit produk' if product else 'Tambah produk' }}</h1>
+</section>
+
+<section class="sec wrap">
+  {% if errors %}
+  <ul class="flash bad" role="alert">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  {% endif %}
+
+  <form class="fields adm-form" id="product-form" method="post">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+
+    <div class="field">
+      <label for="title">Judul</label>
+      <input id="title" name="title" value="{{ values.title }}" maxlength="120" required>
+    </div>
+
+    <div class="adm-two">
+      <div class="field">
+        <label for="category">Jenis</label>
+        <select id="category" name="category">
+          <option value="aplikasi"{% if values.category == 'aplikasi' %} selected{% endif %}>Aplikasi Android</option>
+          <option value="website"{% if values.category == 'website' %} selected{% endif %}>Website</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="available"{% if values.status == 'available' %} selected{% endif %}>Tersedia</option>
+          <option value="sold"{% if values.status == 'sold' %} selected{% endif %}>Terjual</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="adm-two">
+      <div class="field">
+        <label for="price">Harga normal (Rp)</label>
+        <input id="price" name="price" inputmode="numeric" value="{{ values.price }}" placeholder="500000" required>
+      </div>
+      <div class="field">
+        <label for="discount_price">Harga diskon (Rp)</label>
+        <input id="discount_price" name="discount_price" inputmode="numeric" value="{{ values.discount_price }}" placeholder="Kosongkan kalau tidak diskon">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="description">Deskripsi</label>
+      <textarea id="description" name="description" maxlength="4000">{{ values.description }}</textarea>
+    </div>
+
+    <div class="field">
+      <label for="demo_url">Link demo (opsional)</label>
+      <input id="demo_url" name="demo_url" type="url" value="{{ values.demo_url }}" placeholder="https://">
+    </div>
+
+    <div class="field" id="photos" data-sign="{{ url_for('admin_sign') }}" data-csrf="{{ csrf_token() }}">
+      <label for="ph-pick">Foto</label>
+      <p class="hint">Foto pertama jadi sampul di daftar katalog. Jumlah foto bebas.</p>
+      {% if cloud_ready %}
+      <input id="ph-pick" type="file" accept="image/*" multiple>
+      {% else %}
+      <p class="flash bad">Cloudinary belum diatur, jadi upload foto belum bisa dipakai.</p>
+      {% endif %}
+      <p class="hint" id="ph-status" role="status" aria-live="polite"></p>
+      <ul class="ph-list" id="ph-list">
+        {% for url in values.images %}
+        <li class="ph" data-url="{{ url }}">
+          <img src="{{ url|cdn('admin') }}" alt="" width="120" height="120">
+          <input type="hidden" name="images" value="{{ url }}">
+          <span class="ph-cover">Sampul</span>
+          <div class="ph-btns">
+            <button type="button" class="ph-first">Jadikan sampul</button>
+            <button type="button" class="ph-del">Hapus</button>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="field">
+      <label for="buyer_note">Catatan pembeli (hanya admin)</label>
+      <textarea id="buyer_note" name="buyer_note" maxlength="600" placeholder="Nama atau kontak pembeli, status pindah kepemilikan"
+        >{{ values.buyer_note }}</textarea>
+      <p class="hint">Catatan ini tidak pernah tampil di halaman publik.</p>
+    </div>
+
+    <div class="row">
+      <button class="btn solid" type="submit" id="save-btn">Simpan</button>
+      <a class="btn ghost" href="{{ url_for('admin_index') }}">Batal</a>
+    </div>
+  </form>
+</section>
+<script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>
+{% endblock %}

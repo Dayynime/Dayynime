@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Katalog belum bisa dimuat | {{ site.name }}{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Halaman belum bisa dimuat</h1>
+  <p class="sub">Terjadi gangguan saat mengambil data produk. Coba muat ulang beberapa saat lagi.</p>
+</section>
+<section class="sec wrap">
+  <div class="row">
+    {{ btn(url_for('katalog'), 'Ke katalog', 'solid') }}
+    {{ btn(wa_general, 'Hubungi lewat WhatsApp', 'ghost', True) }}
+  </div>
+</section>
+{% endblock %}

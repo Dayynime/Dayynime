@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, info_icon %}
+{% block title %}Pesan | {{ site.name }}{% endblock %}
+{% block description %}Pilih jenis produk, paket, dan fitur tambahan. Pesananmu terisi otomatis di WhatsApp.{% endblock %}
+
+{% block head_extra %}
+<style>
+{# Tampilkan paket sesuai jenis yang dipilih, tanpa JavaScript #}
+.pk-group{display:none}
+{% for c in categories %}
+.order:has(#j-{{ c.id }}:checked) .pk-group[data-kind="{{ c.id }}"]{display:grid}
+{% endfor %}
+@supports not selector(:has(*)){.pk-group{display:grid}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Buat pesanan</h1>
+  <p class="sub">Pilih jenis produk, paket, dan fitur tambahan. Pesananmu terisi otomatis di WhatsApp dan masih bisa kamu ubah sebelum dikirim.</p>
+</section>
+
+<section class="sec wrap">
+  <form class="order" id="order" action="{{ url_for('pesan_kirim') }}" method="get" target="_blank" rel="noopener">
+    <div class="order-main">
+
+      <fieldset class="step">
+        <legend>1. Jenis produk</legend>
+        <div class="opts two">
+          {% for c in categories %}
+          <div>
+            <input class="opt-in" type="radio" name="jenis" id="j-{{ c.id }}" value="{{ c.id }}" data-label="{{ c.label }}"{% if c.id == jenis %} checked{% endif %}>
+            <label class="opt" for="j-{{ c.id }}">
+              <strong>{{ c.label }}</strong>
+              <span>{{ c.intro }}</span>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="step">
+        <legend>2. Paket</legend>
+        {% for c in categories %}
+        <div class="pk-group opts two" data-kind="{{ c.id }}">
+          {% for p in c.packages %}
+          <div>
+            <input class="opt-in" type="radio" name="paket_{{ c.id }}" id="p-{{ c.id }}-{{ loop.index0 }}" value="{{ loop.index0 }}" data-name="{{ p.name }}" data-price="{{ p.price or '' }}"{% if selected[c.id] == loop.index0 %} checked{% endif %}>
+            <label class="opt" for="p-{{ c.id }}-{{ loop.index0 }}">
+              <strong>{{ p.name }}</strong>
+              <span class="p">{% if p.price %}{{ p.price|rupiah }}{% else %}Tanya harga{% endif %}</span>
+              <span>{{ p.desc }}</span>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </fieldset>
+
+      <fieldset class="step">
+        <legend>3. Fitur tambahan</legend>
+        <p class="hint">Boleh dikosongkan. Harga fitur tambahan tergantung tingkat kesulitan dan disepakati di WhatsApp.</p>
+        <div class="chk-list">
+          {% for f in features %}
+          <span>
+            <input class="opt-in" type="checkbox" name="fitur" id="f-{{ loop.index0 }}" value="{{ f }}"{% if f in checked %} checked{% endif %}>
+            <label class="chk" for="f-{{ loop.index0 }}">{{ f }}</label>
+          </span>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="step">
+        <legend>4. Tentang kamu</legend>
+        <div class="fields">
+          <div class="field">
+            <label for="nama">Nama (opsional)</label>
+            <input id="nama" name="nama" type="text" maxlength="60" autocomplete="name" placeholder="Nama panggilan juga boleh">
+          </div>
+          <div class="field">
+            <label for="catatan">Catatan (opsional)</label>
+            <textarea id="catatan" name="catatan" maxlength="600" placeholder="Misalnya: nama aplikasi, referensi tampilan, atau fitur lain yang kamu mau"></textarea>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <aside class="sum" aria-label="Ringkasan pesanan">
+      <h2>Ringkasan</h2>
+      {% set cat = (categories|selectattr('id', 'equalto', jenis)|list)[0] %}
+      {% set pkg = cat.packages[selected[jenis]] %}
+      <dl>
+        <div><dt>Jenis</dt><dd id="sum-kind">{{ cat.label }}</dd></div>
+        <div><dt>Paket</dt><dd id="sum-pkg">{{ pkg.name }}</dd></div>
+        <div><dt>Harga</dt><dd id="sum-price" class="big">{% if pkg.price %}{{ pkg.price|rupiah }}{% else %}Tanya dulu{% endif %}</dd></div>
+        <div><dt>Fitur tambahan</dt><dd id="sum-feat">{{ checked|join(', ') if checked else 'Belum ada' }}</dd></div>
+      </dl>
+      <button class="btn solid" type="submit">Lanjut ke WhatsApp</button>
+      <p class="fine">{{ info_icon() }}Belum ada yang dibayar. Kamu baru mengirim pesan, harga fitur tambahan dibahas di chat.</p>
+    </aside>
+  </form>
+</section>
+{% endblock %}

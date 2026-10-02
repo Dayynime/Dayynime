@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Halaman tidak ditemukan | {{ site.name }}{% endblock %}
+{% block description %}Halaman yang kamu cari tidak ada atau sudah dipindah.{% endblock %}
+
+{% block content %}
+<section class="nf wrap">
+  <p class="nf-code" aria-hidden="true">404</p>
+  <h1>Halaman tidak ditemukan</h1>
+  <p class="sub">Alamatnya mungkin salah ketik, atau halamannya sudah dipindah. Coba salah satu halaman ini.</p>
+  <ul class="pills pills-lg">
+    <li><a href="{{ url_for('layanan') }}">Layanan</a></li>
+    <li><a href="{{ url_for('harga') }}">Harga</a></li>
+    <li><a href="{{ url_for('karya') }}">Karya</a></li>
+    <li><a href="{{ url_for('pesan') }}">Pesan</a></li>
+    <li><a href="{{ url_for('alur_faq') }}">Alur dan FAQ</a></li>
+  </ul>
+  <div class="row">
+    {{ btn(url_for('index'), 'Kembali ke beranda', 'solid') }}
+  </div>
+</section>
+{% endblock %}

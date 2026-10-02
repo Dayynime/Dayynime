@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, tick, info_icon %}
+{% block title %}Daftar harga | {{ site.name }}{% endblock %}
+{% block description %}Daftar harga jasa pembuatan website dan aplikasi Android anime, dengan perbandingan Paket Non-Database dan Paket Database.{% endblock %}
+
+{% block head_extra %}
+<style>
+{# Aturan tab dibuat otomatis dari daftar kategori di app.py #}
+{% for c in categories %}
+#k-{{ c.id }}:checked ~ .seg{--i:{{ loop.index0 }}}
+#k-{{ c.id }}:checked ~ .seg label[for="k-{{ c.id }}"]{color:#fff}
+#k-{{ c.id }}:checked ~ .panels .panel[data-kind="{{ c.id }}"]{display:block}
+#k-{{ c.id }}:focus-visible ~ .seg{outline:2px solid var(--blue-2);outline-offset:3px}
+{% endfor %}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Daftar harga</h1>
+  <p class="sub">Pilih jenis produk, lalu paketnya. Harga fitur di luar paket disepakati lewat WhatsApp.</p>
+</section>
+
+<section class="sec wrap">
+  <div class="tabs">
+    {% for c in categories %}<input class="tab-radio" type="radio" name="kind" id="k-{{ c.id }}" aria-label="{{ c.label }}"{% if c.id == active %} checked{% endif %}>
+    {% endfor %}
+    <div class="seg" style="--n:{{ categories|length }}">
+      {% for c in categories %}<label for="k-{{ c.id }}">{{ c.label }}</label>{% endfor %}
+    </div>
+    <div class="panels">
+      {% for c in categories %}
+      <div class="panel" data-kind="{{ c.id }}">
+        <p class="intro">{{ c.intro }}</p>
+        <div class="plans">
+          {% for p in c.packages %}
+          <article class="plan{{ ' hot' if p.hot }}">
+            {% if p.tag %}<span class="badge">{{ p.tag }}</span>{% endif %}
+            <h3>{{ p.name }}</h3>
+            <p class="desc">{{ p.desc }}</p>
+            {% if p.price %}<p class="price">{{ p.price|rupiah }}</p>{% else %}<p class="price ask">Hubungi untuk harga</p>{% endif %}
+            <ul class="ticks">
+              {% for f in p.features %}<li>{{ tick() }}{{ f }}</li>{% endfor %}
+            </ul>
+            {% if p.note %}<p class="note">{{ info_icon() }}{{ p.note }}</p>{% endif %}
+            {{ btn(p.href, 'Pesan paket ini' if p.price else 'Tanya harga', 'solid' if p.hot else 'ghost', not p.price) }}
+          </article>
+          {% endfor %}
+        </div>
+
+        {% if c.compare %}
+        <h3 class="cmp-title">Perbandingan paket {{ c.label|lower }}</h3>
+        <div class="cmp-wrap">
+          <table class="cmp">
+            <caption class="sr">Perbandingan isi paket {{ c.label|lower }}</caption>
+            <thead>
+              <tr>
+                <th scope="col">Fitur</th>
+                {% for p in c.packages %}
+                <th scope="col"{% if p.hot %} class="hot-col"{% endif %}>{{ p.name }}<span>{% if p.price %}{{ p.price|rupiah }}{% else %}Tanya harga{% endif %}</span></th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for label, flags in c.compare %}
+              <tr>
+                <th scope="row">{{ label }}</th>
+                {% for f in flags %}
+                <td>{% if f %}{{ tick() }}<span class="sr">Termasuk</span>{% else %}<i class="dash" aria-hidden="true"></i><span class="sr">Tidak termasuk</span>{% endif %}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <ul class="info">
+    {% for title, text in pricing_notes %}
+    <li>
+      {{ info_icon() }}
+      <p><strong>{{ title }}.</strong> {{ text }}</p>
+    </li>
+    {% endfor %}
+    <li>
+      {{ info_icon() }}
+      <p><strong>Aturan lengkap.</strong> Pembayaran, revisi, dan biaya database ada di <a class="inline" href="{{ url_for('syarat') }}">syarat dan ketentuan</a>.</p>
+    </li>
+  </ul>
+</section>
+
+<section id="kontak" class="sec wrap">
+  <div class="cta" data-reveal>
+    <h2>Sudah ketemu paket yang pas?</h2>
+    <p>Tulis kebutuhanmu di form pemesanan. Hasilnya langsung terisi di WhatsApp.</p>
+    <div class="actions">
+      {{ btn(url_for('pesan'), 'Buat pesanan', 'solid light') }}
+      {{ btn(wa_general, 'Tanya dulu di WhatsApp', 'ghost on-dark', True) }}
+    </div>
+  </div>
+</section>
+{% endblock %}

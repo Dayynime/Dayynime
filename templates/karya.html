@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, tick %}
+{% block title %}Karya | {{ site.name }}{% endblock %}
+{% block description %}Karya yang sudah dibuat, termasuk Zenime, aplikasi streaming anime Android buatan sendiri.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Karya</h1>
+  <p class="sub">Contoh nyata dari yang bisa dibuat.</p>
+</section>
+
+<section class="sec wrap">
+  {% for pr in projects %}
+  <article class="work spot" data-reveal>
+    <div class="work-copy">
+      <div class="work-id">
+        <img src="{{ url_for('static', filename='img/zenime-logo.jpg') }}" width="68" height="68" alt="" loading="lazy">
+        <h2>{{ pr.name }}</h2>
+      </div>
+      <p class="desc">{{ pr.text }}</p>
+      <div class="row">
+        {{ btn(url_for('karya_detail', slug=pr.slug), 'Lihat detail', 'solid') }}
+        {{ btn(pr.url, pr.cta, 'ghost', True) }}
+      </div>
+    </div>
+    <ul class="feat">
+      {% for f in pr.features %}<li>{{ tick() }}{{ f }}</li>{% endfor %}
+    </ul>
+  </article>
+  {% endfor %}
+
+  <div class="work-more" data-reveal>
+    <div>
+      <h3>Karya berikutnya bisa punyamu</h3>
+      <p>Pilih paket, tulis idemu, dan mulai dari obrolan di WhatsApp.</p>
+    </div>
+    {{ btn(url_for('pesan'), 'Buat pesanan', 'solid') }}
+  </div>
+</section>
+{% endblock %}

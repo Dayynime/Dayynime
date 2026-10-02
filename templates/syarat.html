@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Syarat dan ketentuan | {{ site.name }}{% endblock %}
+{% block description %}Aturan pembayaran, revisi, database, dan sumber anime untuk pesanan website dan aplikasi anime.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Syarat dan ketentuan</h1>
+  <p class="sub">Aturan singkat supaya pesanan berjalan jelas buat kedua pihak. Terakhir diperbarui {{ updated }}.</p>
+</section>
+
+<section class="sec wrap">
+  <div class="prose">
+    {% for title, paras in terms %}
+    <section class="term">
+      <h2>{{ title }}</h2>
+      {% for p in paras %}<p>{{ p }}</p>{% endfor %}
+    </section>
+    {% endfor %}
+    <section class="term">
+      <h2>Ada yang kurang jelas?</h2>
+      <p>Tanyakan dulu sebelum memesan. Semua poin di atas bisa dibahas lewat WhatsApp.</p>
+      <div class="row">{{ btn(wa_general, 'Tanya di WhatsApp', 'solid', True) }}</div>
+    </section>
+  </div>
+</section>
+{% endblock %}

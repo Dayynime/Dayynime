@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, tick %}
+{% block title %}{{ project.name }} | Karya | {{ site.name }}{% endblock %}
+{% block description %}{{ project.tagline }}{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <div class="proj">
+    <div class="proj-copy">
+      <a class="back" href="{{ url_for('karya') }}">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5"/></svg>
+        Semua karya
+      </a>
+      <div class="proj-id">
+        <img src="{{ url_for('static', filename='img/zenime-logo.jpg') }}" width="68" height="68" alt="">
+        <h1>{{ project.name }}</h1>
+      </div>
+      <p class="sub">{{ project.tagline }}</p>
+      <div class="row">
+        {{ btn(project.url, project.cta, 'solid', True) }}
+        {{ btn(url_for('pesan', jenis='app'), 'Pesan yang serupa', 'ghost') }}
+      </div>
+    </div>
+
+    <figure class="stage" id="stage">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="phone" id="phone">
+        <div class="screen">
+          {% set shot = project.screenshots[0] %}
+          <img src="{{ url_for('static', filename=shot.file) }}" width="480" height="752" alt="{{ shot.alt }}" fetchpriority="high">
+        </div>
+      </div>
+      <figcaption>{{ shot.caption }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="cols">
+    <div data-reveal>
+      <h2 class="h-sm">Tentang aplikasinya</h2>
+      <div class="about-text">
+        {% for para in project.about %}<p>{{ para }}</p>{% endfor %}
+      </div>
+    </div>
+    <div data-reveal>
+      <h2 class="h-sm">Teknologi</h2>
+      <ul class="pills" aria-label="Teknologi yang dipakai">
+        {% for t in project.tech %}<li>{{ t }}</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="head" data-reveal>
+    <h2>Fitur</h2>
+  </div>
+  <ul class="feat feat-wide" data-reveal>
+    {% for f in project.features %}<li>{{ tick() }}{{ f }}</li>{% endfor %}
+  </ul>
+</section>
+
+<section id="kontak" class="sec wrap">
+  <div class="cta" data-reveal>
+    <h2>Mau aplikasi seperti {{ project.name }}?</h2>
+    <p>Pilih paket Aplikasi Android, lalu tambahkan fitur yang kamu mau.</p>
+    <div class="actions">
+      {{ btn(url_for('pesan', jenis='app'), 'Buat pesanan', 'solid light') }}
+      {{ btn(url_for('harga', jenis='app'), 'Lihat harga aplikasi', 'ghost on-dark') }}
+    </div>
+  </div>
+</section>
+{% endblock %}

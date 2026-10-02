@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn %}
+{% block title %}Katalog aplikasi dan website jadi | {{ site.name }}{% endblock %}
+{% block description %}Aplikasi dan website anime yang sudah jadi, tinggal pilih dan beli. Kepemilikan dipindahkan ke kamu setelah pembelian.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Katalog siap pakai</h1>
+  <p class="sub">Aplikasi dan website yang sudah jadi. Pilih satu, beli, dan kepemilikannya pindah ke kamu.</p>
+</section>
+
+<section class="sec wrap">
+  <ul class="pills pills-lg cat-tabs" aria-label="Filter jenis produk">
+    <li><a href="{{ url_for('katalog') }}"{% if not jenis %} aria-current="true"{% endif %}>Semua</a></li>
+    <li><a href="{{ url_for('katalog', jenis='website') }}"{% if jenis == 'website' %} aria-current="true"{% endif %}>Website</a></li>
+    <li><a href="{{ url_for('katalog', jenis='aplikasi') }}"{% if jenis == 'aplikasi' %} aria-current="true"{% endif %}>Aplikasi</a></li>
+  </ul>
+
+  {% if failed %}
+  <div class="empty">
+    <h3>Katalog belum bisa dimuat</h3>
+    <p>Coba muat ulang halaman ini beberapa saat lagi.</p>
+  </div>
+  {% elif items %}
+  <ul class="catalog">
+    {% for p in items %}
+    <li>
+      <a class="item{% if p.sold %} sold{% endif %}" href="{{ url_for('katalog_detail', slug=p.slug) }}">
+        <div class="item-img">
+          {% if p.images %}
+          <img src="{{ p.images[0]|cdn('card') }}" alt="" width="640" height="400" loading="lazy">
+          {% else %}
+          <div class="item-ph" aria-hidden="true"></div>
+          {% endif %}
+          {% if p.sold %}<span class="tag tag-sold">Terjual</span>{% elif p.percent %}<span class="tag tag-off">-{{ p.percent }}%</span>{% endif %}
+        </div>
+        <div class="item-body">
+          <span class="item-cat">{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}</span>
+          <h3>{{ p.title }}</h3>
+          {% if p.description %}<p class="item-desc">{{ p.description }}</p>{% endif %}
+          <p class="price">
+            {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}
+            <strong>{{ p.final_price|rupiah }}</strong>
+          </p>
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty">
+    <h3>{% if jenis %}Belum ada produk di jenis ini{% else %}Belum ada produk di katalog{% endif %}</h3>
+    <p>Produk jadi akan muncul di sini. Sementara itu, kamu bisa pesan yang dibuat sesuai kebutuhanmu.</p>
+    <div class="row">{{ btn(url_for('pesan'), 'Buat pesanan', 'solid') }}</div>
+  </div>
+  {% endif %}
+</section>
+
+<section id="kontak" class="sec wrap">
+  <div class="cta" data-reveal>
+    <h2>Tidak ada yang cocok?</h2>
+    <p>Kami buatkan yang sesuai kebutuhanmu, lengkap dengan paket dan fitur yang kamu pilih.</p>
+    <div class="actions">
+      {{ btn(url_for('pesan'), 'Buat pesanan', 'solid light') }}
+      {{ btn(wa_general, 'Tanya di WhatsApp', 'ghost on-dark', True) }}
+    </div>
+  </div>
+</section>
+{% endblock %}

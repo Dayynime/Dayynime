@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_macros.html" import btn, tick %}
+{% block title %}Tentang | {{ site.name }}{% endblock %}
+{% block description %}Dayynime dikerjakan langsung oleh developer Zenime, aplikasi streaming anime Android.{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Dikerjakan langsung oleh developer Zenime</h1>
+</section>
+
+<section class="sec wrap">
+  <div class="about" data-reveal>
+    <div class="about-text">
+      {% for para in about.intro %}<p>{{ para }}</p>{% endfor %}
+      <div class="row">
+        {{ btn(url_for('karya_detail', slug='zenime'), 'Lihat Zenime', 'solid') }}
+        {{ btn(wa_general, 'Chat WhatsApp', 'ghost', True) }}
+      </div>
+    </div>
+    <ul class="feat">
+      {% for title, text in about.principles %}
+      <li>{{ tick() }}<span><strong>{{ title }}.</strong> {{ text }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="head" data-reveal>
+    <h2>Alat yang dipakai</h2>
+  </div>
+  <ul class="pills pills-lg" data-reveal>
+    {% for t in stack %}<li>{{ t }}</li>{% endfor %}
+  </ul>
+</section>
+{% endblock %}

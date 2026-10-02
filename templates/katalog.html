@@ -10,11 +10,14 @@
 </section>
 
 <section class="sec wrap">
-  <ul class="pills pills-lg cat-tabs" aria-label="Filter jenis produk">
+  <div class="cat-bar">
+    <ul class="pills pills-lg cat-tabs" aria-label="Filter jenis produk">
     <li><a href="{{ url_for('katalog') }}"{% if not jenis %} aria-current="true"{% endif %}>Semua</a></li>
     <li><a href="{{ url_for('katalog', jenis='website') }}"{% if jenis == 'website' %} aria-current="true"{% endif %}>Website</a></li>
     <li><a href="{{ url_for('katalog', jenis='aplikasi') }}"{% if jenis == 'aplikasi' %} aria-current="true"{% endif %}>Aplikasi</a></li>
   </ul>
+    {% if items and not failed %}<p class="cat-count">{{ items|length }} produk</p>{% endif %}
+  </div>
 
   {% if failed %}
   <div class="empty">
@@ -25,23 +28,34 @@
   <ul class="catalog">
     {% for p in items %}
     <li>
-      <a class="item{% if p.sold %} sold{% endif %}" href="{{ url_for('katalog_detail', slug=p.slug) }}">
-        <div class="item-img">
+      <a class="pc{% if p.sold %} sold{% endif %}" href="{{ url_for('katalog_detail', slug=p.slug) }}">
+        <div class="pc-img">
           {% if p.images %}
           <img src="{{ p.images[0]|cdn('card') }}" alt="" width="640" height="400" loading="lazy">
           {% else %}
-          <div class="item-ph" aria-hidden="true"></div>
+          <div class="pc-ph" aria-hidden="true"></div>
           {% endif %}
           {% if p.sold %}<span class="tag tag-sold">Terjual</span>{% elif p.percent %}<span class="tag tag-off">-{{ p.percent }}%</span>{% endif %}
         </div>
-        <div class="item-body">
-          <span class="item-cat">{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}</span>
-          <h3>{{ p.title }}</h3>
-          {% if p.description %}<p class="item-desc">{{ p.description }}</p>{% endif %}
-          <p class="price">
-            {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}
-            <strong>{{ p.final_price|rupiah }}</strong>
+        <div class="pc-body">
+          <p class="pc-cat">
+            {% if p.category == 'aplikasi' %}
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4.5" y="1.5" width="7" height="13" rx="1.8"/><path d="M7 12.2h2"/></svg>
+            Aplikasi Android
+            {% else %}
+            <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M1.5 8h13M8 1.5c2 2 3 4 3 6.5s-1 4.5-3 6.5c-2-2-3-4-3-6.5s1-4.5 3-6.5z"/></svg>
+            Website
+            {% endif %}
           </p>
+          <h3>{{ p.title }}</h3>
+          {% if p.description %}<p class="pc-desc">{{ p.description }}</p>{% endif %}
+          <div class="pc-foot">
+            <p class="price">
+              {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}
+              <strong>{{ p.final_price|rupiah }}</strong>
+            </p>
+            <span class="pc-go">Lihat detail<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg></span>
+          </div>
         </div>
       </a>
     </li>

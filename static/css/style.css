@@ -457,10 +457,21 @@ a.inline:hover{color:var(--text)}
 @media(min-width:800px){.info li:last-child:nth-child(odd){grid-column:1/-1}}
 
 /* katalog produk jadi */
-.cat-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin-bottom:24px}
+.kat-points{display:flex;flex-wrap:wrap;gap:10px 28px;margin:22px 0 0}
+.kat-points li{align-items:center;color:var(--muted);font-size:.95rem}
+.kat-points svg{margin-top:0}
+@media(max-width:560px){.kat-points{flex-direction:column;gap:10px}}
+.cat-bar{margin-bottom:24px}
+.cat-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tabs li{flex:none}
+.cat-tabs li a{display:flex;align-items:center;gap:9px}
+.cat-tabs .cnt{min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted);font-size:.8rem;line-height:1.5;text-align:center}
+.cat-tabs a[aria-current] .cnt{background:rgba(59,130,246,.28);color:var(--blue-2)}
 .cat-tabs li:has(a[aria-current]){background:rgba(59,130,246,.16);border-color:rgba(59,130,246,.45)}
 .cat-tabs a[aria-current]{color:var(--blue-2)}
-.cat-count{color:var(--muted);font-size:.92rem}
+@media(max-width:480px){.cat-tabs.pills-lg{gap:8px}.cat-tabs li a{padding:9px 13px;gap:7px;font-size:.9rem}.cat-tabs .cnt{min-width:20px;padding:0 6px;font-size:.75rem}}
+@media(max-width:380px){.cat-tabs.pills-lg{gap:6px}.cat-tabs li a{padding:8px 10px;gap:5px;font-size:.86rem}}
 .catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
 .pc{display:flex;flex-direction:column;height:100%;padding:10px;border-radius:22px;background:var(--surface);border:1px solid var(--line);text-decoration:none;transition:border-color .25s,background .25s}
 .pc:hover{border-color:var(--line-2);background:var(--surface-2)}
@@ -492,6 +503,16 @@ a.inline:hover{color:var(--text)}
 .price .off{padding:3px 10px;border-radius:999px;background:rgba(244,63,94,.14);color:#ff8aa0;font-size:.82rem;font-weight:600}
 .price-lg strong{font-size:clamp(1.8rem,4vw,2.4rem)}
 @media(prefers-reduced-motion:reduce){.pc-go svg{transition:none}.pc:hover .pc-go svg{transform:none}}
+
+.kat-steps+.kat-cta{padding-top:0}
+.cta-slim{padding:clamp(28px,5vw,44px);border-radius:28px;gap:8px}
+.cta-slim h2{max-width:none;font-size:clamp(1.5rem,3.4vw,2.1rem)}
+.cta-slim p{font-size:1rem}
+@media(min-width:860px){
+  .cta-slim{grid-template-columns:1fr auto;align-items:center;column-gap:48px}
+  .cta-slim h2,.cta-slim p{grid-column:1}
+  .cta-slim .actions{grid-column:2;grid-row:1/span 2;margin:0}
+}
 
 /* detail produk */
 .pd{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:start}

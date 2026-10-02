@@ -722,9 +722,17 @@ def katalog():
             items = [decorate(r) for r in supa.list_public()]
         except supa.StoreError:
             failed = True
+    counts = {
+        "all": len(items),
+        "website": sum(1 for p in items if p["category"] == "website"),
+        "aplikasi": sum(1 for p in items if p["category"] == "aplikasi"),
+    }
     if jenis:
         items = [p for p in items if p["category"] == jenis]
-    page = render_template("katalog.html", items=items, jenis=jenis, failed=failed)
+    page = render_template(
+        "katalog.html", items=items, jenis=jenis, failed=failed,
+        counts=counts, steps=TRANSFER_STEPS,
+    )
     return cached(make_response(page), ok=not failed)
 
 

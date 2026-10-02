@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import btn %}
+{% from "_macros.html" import btn, tick %}
 {% block title %}Katalog aplikasi dan website jadi | {{ site.name }}{% endblock %}
 {% block description %}Aplikasi dan website anime yang sudah jadi, tinggal pilih dan beli. Kepemilikan dipindahkan ke kamu setelah pembelian.{% endblock %}
 
@@ -7,16 +7,20 @@
 <section class="page-head wrap">
   <h1>Katalog siap pakai</h1>
   <p class="sub">Aplikasi dan website yang sudah jadi. Pilih satu, beli, dan kepemilikannya pindah ke kamu.</p>
+  <ul class="ticks kat-points">
+    <li>{{ tick() }}Source code pindah ke akunmu</li>
+    <li>{{ tick() }}Akses hosting dan database ikut dipindahkan</li>
+    <li>{{ tick() }}Beli dan tanya langsung lewat WhatsApp</li>
+  </ul>
 </section>
 
 <section class="sec wrap">
   <div class="cat-bar">
     <ul class="pills pills-lg cat-tabs" aria-label="Filter jenis produk">
-    <li><a href="{{ url_for('katalog') }}"{% if not jenis %} aria-current="true"{% endif %}>Semua</a></li>
-    <li><a href="{{ url_for('katalog', jenis='website') }}"{% if jenis == 'website' %} aria-current="true"{% endif %}>Website</a></li>
-    <li><a href="{{ url_for('katalog', jenis='aplikasi') }}"{% if jenis == 'aplikasi' %} aria-current="true"{% endif %}>Aplikasi</a></li>
-  </ul>
-    {% if items and not failed %}<p class="cat-count">{{ items|length }} produk</p>{% endif %}
+      <li><a href="{{ url_for('katalog') }}"{% if not jenis %} aria-current="true"{% endif %}>Semua<span class="cnt">{{ counts.all }}</span></a></li>
+      <li><a href="{{ url_for('katalog', jenis='website') }}"{% if jenis == 'website' %} aria-current="true"{% endif %}>Website<span class="cnt">{{ counts.website }}</span></a></li>
+      <li><a href="{{ url_for('katalog', jenis='aplikasi') }}"{% if jenis == 'aplikasi' %} aria-current="true"{% endif %}>Aplikasi<span class="cnt">{{ counts.aplikasi }}</span></a></li>
+    </ul>
   </div>
 
   {% if failed %}
@@ -70,8 +74,23 @@
   {% endif %}
 </section>
 
-<section id="kontak" class="sec wrap">
-  <div class="cta" data-reveal>
+{% if items and not failed %}
+<section class="sec wrap kat-steps">
+  <div class="head" data-reveal><h2>Cara beli dan pindah kepemilikan</h2></div>
+  <ol class="steps" id="steps">
+    {% for title, text in steps %}
+    <li style="--d:{{ loop.index0 * 140 }}ms">
+      <span class="n">{{ loop.index }}</span>
+      <h3>{{ title }}</h3>
+      <p>{{ text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+<section id="kontak" class="sec wrap kat-cta">
+  <div class="cta cta-slim" data-reveal>
     <h2>Tidak ada yang cocok?</h2>
     <p>Kami buatkan yang sesuai kebutuhanmu, lengkap dengan paket dan fitur yang kamu pilih.</p>
     <div class="actions">

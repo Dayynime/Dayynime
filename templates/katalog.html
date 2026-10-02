@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% from "_macros.html" import btn, tick %}
-{% block title %}Katalog aplikasi dan website jadi | {{ site.name }}{% endblock %}
+{% block title %}Produk jadi: aplikasi dan website siap beli | {{ site.name }}{% endblock %}
 {% block description %}Aplikasi dan website anime yang sudah jadi, tinggal pilih dan beli. Kepemilikan dipindahkan ke kamu setelah pembelian.{% endblock %}
 
 {% block content %}
 <section class="page-head wrap">
-  <h1>Katalog siap pakai</h1>
+  <h1>Produk jadi</h1>
   <p class="sub">Aplikasi dan website yang sudah jadi. Pilih satu, beli, dan kepemilikannya pindah ke kamu.</p>
   <ul class="ticks kat-points">
     <li>{{ tick() }}Source code pindah ke akunmu</li>
@@ -25,7 +25,7 @@
 
   {% if failed %}
   <div class="empty">
-    <h3>Katalog belum bisa dimuat</h3>
+    <h3>Produk jadi belum bisa dimuat</h3>
     <p>Coba muat ulang halaman ini beberapa saat lagi.</p>
   </div>
   {% elif items %}
@@ -67,7 +67,7 @@
   </ul>
   {% else %}
   <div class="empty">
-    <h3>{% if jenis %}Belum ada produk di jenis ini{% else %}Belum ada produk di katalog{% endif %}</h3>
+    <h3>{% if jenis %}Belum ada produk di jenis ini{% else %}Belum ada produk jadi{% endif %}</h3>
     <p>Produk jadi akan muncul di sini. Sementara itu, kamu bisa pesan yang dibuat sesuai kebutuhanmu.</p>
     <div class="row">{{ btn(url_for('pesan'), 'Buat pesanan', 'solid') }}</div>
   </div>

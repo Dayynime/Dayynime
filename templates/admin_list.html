@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% from "_macros.html" import btn %}
-{% block title %}Admin katalog | {{ site.name }}{% endblock %}
+{% block title %}Admin produk jadi | {{ site.name }}{% endblock %}
 
 {% block content %}
 <section class="page-head wrap">
-  <h1>Admin katalog</h1>
+  <h1>Admin produk jadi</h1>
   <div class="row adm-top">
     {{ btn(url_for('admin_new'), 'Tambah produk', 'solid') }}
     {{ btn(url_for('katalog'), 'Lihat halaman publik', 'ghost') }}
@@ -55,7 +55,7 @@
   {% elif not error %}
   <div class="empty">
     <h3>Belum ada produk</h3>
-    <p>Tambahkan produk pertama, lalu muncul di halaman katalog.</p>
+    <p>Tambahkan produk pertama, lalu muncul di halaman produk jadi.</p>
     <div class="row">{{ btn(url_for('admin_new'), 'Tambah produk', 'solid') }}</div>
   </div>
   {% endif %}

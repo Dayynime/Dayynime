@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% from "_macros.html" import btn %}
-{% block title %}{{ p.title }} | Katalog | {{ site.name }}{% endblock %}
+{% block title %}{{ p.title }} | Produk jadi | {{ site.name }}{% endblock %}
 {% block description %}{{ (p.description or p.title)|replace('\n', ' ')|truncate(150) }}{% endblock %}
 {% block head_extra %}{% if p.images %}<meta property="og:image" content="{{ p.images[0]|cdn('card') }}">{% endif %}{% endblock %}
 
@@ -80,7 +80,7 @@
   <div class="cta" data-reveal>
     {% if p.sold %}
     <h2>Cari yang lain?</h2>
-    <p>Masih ada produk jadi lain di katalog, atau kami buatkan yang baru.</p>
+    <p>Masih ada produk jadi lain, atau kami buatkan yang baru.</p>
     <div class="actions">
       {{ btn(url_for('katalog'), 'Lihat katalog', 'solid light') }}
       {{ btn(url_for('pesan'), 'Buat pesanan', 'ghost on-dark') }}

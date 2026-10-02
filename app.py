@@ -765,7 +765,7 @@ def katalog_detail(slug):
     p = decorate(row)
     buy_link = wa_link(
         f"Halo Dayynime, saya mau beli {p['title']} ({rupiah(p['final_price'])}) "
-        f"dari katalog. Masih tersedia?\n{request.url}"
+        f"dari halaman Produk Jadi. Masih tersedia?\n{request.url}"
     )
     page = render_template(
         "katalog_detail.html", p=p, buy_link=buy_link, steps=TRANSFER_STEPS

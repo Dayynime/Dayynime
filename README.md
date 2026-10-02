@@ -37,8 +37,8 @@ Catatan: `vercel.json` memakai `includeFiles` supaya folder `templates/` dan `st
 | `/layanan` | Penjelasan tiap layanan |
 | `/harga` | Paket per jenis produk plus tabel perbandingan (`/harga?jenis=app` membuka tab aplikasi) |
 | `/karya`, `/karya/zenime` | Daftar karya dan halaman detail |
-| `/katalog`, `/katalog/<slug>` | Katalog produk jadi (list + detail), status tersedia/terjual |
-| `/admin` | Admin katalog (login password), tidak ada di menu |
+| `/katalog`, `/katalog/<slug>` | Produk jadi (list + detail), status tersedia/terjual |
+| `/admin` | Admin produk jadi (login password), tidak ada di menu |
 | `/pesan` | Form pemesanan. Hasilnya dikirim ke `/pesan/kirim`, lalu diarahkan ke WhatsApp dengan pesan terisi |
 | `/syarat` | Syarat dan ketentuan |
 | `/alur-faq` | Alur pemesanan dan FAQ |
@@ -61,7 +61,7 @@ Catatan: `vercel.json` memakai `includeFiles` supaya folder `templates/` dan `st
 - `static/js/main.js`: navbar, menu mobile, animasi muncul saat scroll, efek sorot kursor, ringkasan form pemesanan.
 - Animasi otomatis mati kalau perangkat memakai pengaturan "kurangi gerakan".
 
-## Katalog produk jadi (admin + Supabase + Cloudinary)
+## Produk jadi (admin + Supabase + Cloudinary)
 
 Produk jadi (aplikasi/website) dikelola dari `/admin`: judul, deskripsi, harga normal, harga diskon,
 foto sebanyak apa pun (disimpan di Cloudinary), status tersedia/terjual, dan catatan pembeli (hanya admin).

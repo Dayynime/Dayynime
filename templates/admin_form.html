@@ -63,7 +63,7 @@
 
     <div class="field" id="photos" data-sign="{{ url_for('admin_sign') }}" data-csrf="{{ csrf_token() }}">
       <label for="ph-pick">Foto</label>
-      <p class="hint">Foto pertama jadi sampul di daftar katalog. Jumlah foto bebas.</p>
+      <p class="hint">Foto pertama jadi sampul di daftar produk jadi. Jumlah foto bebas.</p>
       {% if cloud_ready %}
       <input id="ph-pick" type="file" accept="image/*" multiple>
       {% else %}

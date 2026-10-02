@@ -50,7 +50,7 @@ svg{display:block}
 .mark rect{fill:var(--blue)}
 .mark path{fill:none;stroke:#fff;stroke-width:3;stroke-linejoin:round}
 .menu{display:flex;gap:28px;font-size:.93rem;color:var(--muted);position:absolute;left:50%;transform:translateX(-50%)}
-.menu a{text-decoration:none;position:relative;padding-block:6px;transition:color .2s}
+.menu a{white-space:nowrap;text-decoration:none;position:relative;padding-block:6px;transition:color .2s}
 .menu a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--text);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
 .menu a:hover{color:var(--text)}
 .menu a:hover::after{transform:scaleX(1)}

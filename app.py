@@ -444,7 +444,7 @@ TERMS = [
 NAV = [
     ("layanan", "Layanan"),
     ("harga", "Harga"),
-    ("katalog", "Katalog"),
+    ("katalog", "Produk Jadi"),
     ("karya", "Karya"),
     ("alur_faq", "Alur & FAQ"),
     ("tentang", "Tentang"),

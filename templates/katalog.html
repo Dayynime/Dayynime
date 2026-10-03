@@ -62,7 +62,7 @@
           {% if p.description %}<p class="pc-desc">{{ p.description }}</p>{% endif %}
           <ul class="facts">
             <li>{{ 'Pakai database' if p.db == 'database' else 'Tanpa database' }}</li>
-            {% if not p.sold and p.stock > 1 %}<li>Stok {{ p.stock }}</li>{% endif %}
+            {% if not p.sold %}<li>Stok {{ p.stock }}</li>{% endif %}
           </ul>
           <div class="pc-foot">
             <p class="price">

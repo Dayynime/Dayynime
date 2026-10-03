@@ -27,32 +27,37 @@
     </div>
 
     <div class="pd-info">
-      <span class="item-cat">{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}</span>
       <h1>{{ p.title }}</h1>
-      <ul class="facts facts-lg">
-        <li>{{ 'Pakai database' if p.db == 'database' else 'Tanpa database' }}</li>
-      </ul>
 
-      <p class="price price-lg">
-        {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}
-        <strong>{{ p.final_price|rupiah }}</strong>
-        {% if p.percent and not p.sold %}<span class="off">Hemat {{ p.percent }}%</span>{% endif %}
-      </p>
+      <div class="buy{% if p.sold %} is-sold{% endif %}">
+        <div class="buy-price">
+          <strong>{{ p.final_price|rupiah }}</strong>
+          {% if p.percent and not p.sold %}
+          <span class="buy-was"><s>{{ p.price|rupiah }}</s><b>Hemat {{ p.percent }}%</b></span>
+          {% endif %}
+        </div>
 
-      {% if p.sold %}
-      <p class="pd-status is-sold">Sudah terjual</p>
-      <p class="pd-note">Produk ini sudah punya pemilik baru. Lihat produk lain, atau pesan yang dibuat serupa.</p>
-      <div class="row">
-        {{ btn(url_for('katalog'), 'Lihat produk lain', 'solid') }}
-        {{ btn(url_for('pesan', jenis='app' if p.category == 'aplikasi' else 'web'), 'Pesan yang serupa', 'ghost') }}
+        <dl class="spec">
+          <div><dt>Jenis</dt><dd>{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}</dd></div>
+          <div><dt>Database</dt><dd>{{ 'Pakai database' if p.db == 'database' else 'Tanpa database' }}</dd></div>
+          <div><dt>Status</dt><dd class="st {{ 'is-sold' if p.sold else 'is-ok' }}">{{ 'Terjual' if p.sold else 'Tersedia' }}</dd></div>
+          {% if not p.sold %}<div><dt>Stok</dt><dd>{{ p.stock }}</dd></div>{% endif %}
+        </dl>
+
+        {% if p.sold %}
+        <p class="pd-note">Produk ini sudah punya pemilik baru. Lihat produk lain, atau pesan yang dibuat serupa.</p>
+        <div class="buy-actions">
+          {{ btn(url_for('katalog'), 'Lihat produk lain', 'solid') }}
+          {{ btn(url_for('pesan', jenis='app' if p.category == 'aplikasi' else 'web'), 'Pesan yang serupa', 'ghost') }}
+        </div>
+        {% else %}
+        <div class="buy-actions">
+          {{ btn(buy_link, 'Beli lewat WhatsApp', 'solid', True) }}
+          {% if p.demo_url %}{{ btn(p.demo_url, 'Lihat demo', 'ghost', True) }}{% endif %}
+        </div>
+        <p class="buy-note">Source code dan akses dipindahkan ke kamu setelah pembayaran.</p>
+        {% endif %}
       </div>
-      {% else %}
-      <p class="pd-status is-ok">Tersedia{% if p.stock > 1 %}, stok {{ p.stock }}{% endif %}</p>
-      <div class="row">
-        {{ btn(buy_link, 'Beli lewat WhatsApp', 'solid', True) }}
-        {% if p.demo_url %}{{ btn(p.demo_url, 'Lihat demo', 'ghost', True) }}{% endif %}
-      </div>
-      {% endif %}
     </div>
   </div>
 </section>

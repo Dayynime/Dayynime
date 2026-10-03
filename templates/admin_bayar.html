@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Buat link bayar | {{ site.name }}{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+  <h1>Buat link bayar</h1>
+  <p class="sub">Isi setelah pembeli konfirmasi. Link menampilkan QRIS dan nominal, berlaku 7 hari, dan nominalnya tidak bisa diubah pembeli.</p>
+  <div class="row adm-top">
+    <a class="btn ghost" href="{{ url_for('admin_index') }}">Kembali</a>
+  </div>
+</section>
+
+<section class="sec wrap">
+  {% if error %}<p class="flash bad" role="alert">{{ error }}</p>{% endif %}
+
+  <form class="fields adm-narrow" method="post" autocomplete="off">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <div class="field">
+      <label for="nama">Nama pembeli (opsional)</label>
+      <input id="nama" name="nama" type="text" maxlength="60" value="{{ values.nama }}" placeholder="Misalnya: dayy">
+    </div>
+    <div class="field">
+      <label for="ket">Keterangan (opsional)</label>
+      <input id="ket" name="ket" type="text" maxlength="120" value="{{ values.ket }}" placeholder="Misalnya: Paket Database + Clan">
+    </div>
+    <div class="field">
+      <label for="nominal">Nominal (Rp)</label>
+      <input id="nominal" name="nominal" type="text" inputmode="numeric" required value="{{ values.nominal }}" placeholder="650000">
+    </div>
+    <div><button class="btn solid" type="submit">Buat link</button></div>
+  </form>
+
+  {% if link %}
+  <div class="pay-out adm-narrow">
+    <p class="pay-lbl">Pesan siap kirim ke pembeli</p>
+    <textarea id="pay-msg" readonly rows="4">Total pembayaran {{ amount|rupiah }}. Bayar lewat QRIS di link ini ya kak:
+{{ link }}
+
+Setelah bayar, kirim screenshot bukti pembayarannya di sini.</textarea>
+    <div class="row">
+      <button class="btn solid" type="button" data-copy-from="#pay-msg" data-done="Pesan tersalin">Salin pesan</button>
+      <button class="btn ghost" type="button" data-copy="{{ link }}" data-done="Link tersalin">Salin link saja</button>
+      <a class="btn ghost" href="{{ link }}" target="_blank" rel="noopener">Buka halaman</a>
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

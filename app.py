@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from urllib.parse import quote
 
+from itsdangerous import BadSignature, URLSafeTimedSerializer
 from flask import (
     Flask,
     abort,
@@ -661,6 +662,40 @@ def pesan_kirim():
     return response
 
 
+# ----------------------------------------------------------------------------
+# LINK PEMBAYARAN QRIS (satu halaman per order, dibuat dari /admin/bayar)
+# ----------------------------------------------------------------------------
+PAY_MAX_AGE = 7 * 24 * 3600  # link berlaku 7 hari
+_pay_signer = URLSafeTimedSerializer(app.secret_key, salt="bayar-qris")
+
+
+@app.route("/bayar/<token>")
+def bayar(token):
+    """Halaman bayar untuk pembeli. Nominal ditandatangani, jadi tidak bisa diubah lewat URL."""
+    try:
+        data = _pay_signer.loads(token, max_age=PAY_MAX_AGE)
+        amount = int(data["a"])
+        nama = str(data.get("n", ""))[:60]
+        ket = str(data.get("k", ""))[:120]
+        if amount < 1:
+            raise ValueError
+    except (BadSignature, KeyError, ValueError, TypeError):
+        response = make_response(render_template("bayar.html", valid=False), 410)
+    else:
+        pesan_wa = f"Halo Dayynime, saya sudah bayar {rupiah(amount)}"
+        if ket:
+            pesan_wa += f" untuk {ket}"
+        if nama:
+            pesan_wa += f" (a.n. {nama})"
+        pesan_wa += ". Ini bukti pembayarannya."
+        response = make_response(
+            render_template("bayar.html", valid=True, amount=amount, nama=nama, ket=ket, wa=wa_link(pesan_wa))
+        )
+    response.headers["X-Robots-Tag"] = "noindex, nofollow"
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/syarat")
 def syarat():
     return render_template("syarat.html", terms=TERMS, updated=TERMS_UPDATED)
@@ -972,6 +1007,23 @@ def admin_index():
         except supa.StoreError as err:
             error = str(err)
     return render_template("admin_list.html", items=items, error=error)
+
+
+@app.route("/admin/bayar", methods=["GET", "POST"])
+@admin_required
+def admin_bayar():
+    values = {"nama": "", "ket": "", "nominal": ""}
+    error = link = amount = None
+    if request.method == "POST":
+        values = {k: request.form.get(k, "").strip() for k in values}
+        digits = re.sub(r"\D", "", values["nominal"])
+        amount = int(digits) if digits else 0
+        if not 1_000 <= amount <= 50_000_000:
+            error = "Nominal harus antara Rp1.000 dan Rp50.000.000."
+        else:
+            token = _pay_signer.dumps({"n": values["nama"][:60], "k": values["ket"][:120], "a": amount})
+            link = url_for("bayar", token=token, _external=True)
+    return render_template("admin_bayar.html", values=values, error=error, link=link, amount=amount)
 
 
 def _form_page(product, values, errors):

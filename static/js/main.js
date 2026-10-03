@@ -70,6 +70,27 @@
     sync();
   }
 
+  // tombol salin (nominal, link, pesan)
+  $$('[data-copy], [data-copy-from]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const src = btn.dataset.copyFrom ? $(btn.dataset.copyFrom) : null;
+      const text = src ? src.value : btn.dataset.copy;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      const old = btn.textContent;
+      btn.textContent = btn.dataset.done || 'Tersalin';
+      setTimeout(() => { btn.textContent = old; }, 1600);
+    });
+  });
+
   if (reduce) return;
 
   // sorot mengikuti kursor

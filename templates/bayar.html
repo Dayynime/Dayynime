@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Pembayaran | {{ site.name }}{% endblock %}
+{% block description %}Halaman pembayaran pesanan.{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+{% if valid %}
+<section class="page-head wrap">
+  <h1>Pembayaran</h1>
+  <p class="sub">{% if nama %}Untuk {{ nama }}. {% endif %}Scan QRIS di bawah, lalu masukkan nominal sesuai angka yang tertera.</p>
+</section>
+
+<section class="sec wrap">
+  <div class="pay">
+    <div>
+      <p class="pay-lbl">Total yang dibayar</p>
+      <p class="pay-amt" id="pay-amt">{{ amount|rupiah }}</p>
+      {% if ket %}<p class="pay-ket">{{ ket }}</p>{% endif %}
+    </div>
+    <button class="btn ghost" type="button" data-copy="{{ amount }}" data-done="Nominal tersalin">Salin nominal</button>
+
+    <img class="pay-qr" src="{{ url_for('static', filename='img/qris.png') }}" alt="QRIS Warung Dayynime Store" width="870" height="870">
+    <a class="pay-dl" href="{{ url_for('static', filename='img/qris.png') }}" download="qris-dayynime.png">Simpan gambar QRIS</a>
+
+    <ol class="pay-steps">
+      <li>Buka e-wallet atau m-banking, pilih scan QRIS.</li>
+      <li>Masukkan nominal <strong>{{ amount|rupiah }}</strong>.</li>
+      <li>Setelah bayar, kirim screenshot bukti pembayaran lewat WhatsApp.</li>
+    </ol>
+    <a class="btn solid" href="{{ wa }}" target="_blank" rel="noopener">Kirim bukti bayar</a>
+  </div>
+</section>
+{% else %}
+<section class="page-head wrap">
+  <h1>Link tidak berlaku</h1>
+  <p class="sub">Link pembayaran ini salah atau sudah kedaluwarsa. Minta link baru lewat WhatsApp.</p>
+  <div class="row"><a class="btn solid" href="{{ wa_general }}" target="_blank" rel="noopener">Chat WhatsApp</a></div>
+</section>
+{% endif %}
+{% endblock %}

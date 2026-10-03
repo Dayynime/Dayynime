@@ -7,6 +7,7 @@
   <h1>Admin produk jadi</h1>
   <div class="row adm-top">
     {{ btn(url_for('admin_new'), 'Tambah produk', 'solid') }}
+    {{ btn(url_for('admin_bayar'), 'Buat link bayar', 'ghost') }}
     {{ btn(url_for('katalog'), 'Lihat halaman publik', 'ghost') }}
     <form method="post" action="{{ url_for('admin_logout') }}">
       <input type="hidden" name="csrf" value="{{ csrf_token() }}">

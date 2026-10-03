@@ -59,12 +59,12 @@
 
       <fieldset class="step">
         <legend>3. Fitur tambahan</legend>
-        <p class="hint">Boleh dikosongkan. Harga fitur tambahan tergantung tingkat kesulitan dan disepakati di WhatsApp.</p>
+        <p class="hint">Boleh dikosongkan. Harga di bawah adalah harga mulai dari. Total di ringkasan ikut bertambah, dan harga akhir dikonfirmasi di WhatsApp.</p>
         <div class="chk-list">
           {% for f in features %}
           <span>
-            <input class="opt-in" type="checkbox" name="fitur" id="f-{{ loop.index0 }}" value="{{ f }}"{% if f in checked %} checked{% endif %}>
-            <label class="chk" for="f-{{ loop.index0 }}">{{ f }}</label>
+            <input class="opt-in" type="checkbox" name="fitur" id="f-{{ loop.index0 }}" value="{{ f }}" data-price="{{ feature_prices[f] }}"{% if f in checked %} checked{% endif %}>
+            <label class="chk" for="f-{{ loop.index0 }}">{{ f }} <small>+{{ feature_prices[f]|rupiah }}</small></label>
           </span>
           {% endfor %}
         </div>
@@ -92,11 +92,12 @@
       <dl>
         <div><dt>Jenis</dt><dd id="sum-kind">{{ cat.label }}</dd></div>
         <div><dt>Paket</dt><dd id="sum-pkg">{{ pkg.name }}</dd></div>
-        <div><dt>Harga</dt><dd id="sum-price" class="big">{% if pkg.price %}{{ pkg.price|rupiah }}{% else %}Tanya dulu{% endif %}</dd></div>
-        <div><dt>Fitur tambahan</dt><dd id="sum-feat">{{ checked|join(', ') if checked else 'Belum ada' }}</dd></div>
+        <div><dt>Harga paket</dt><dd id="sum-pkg-price">{% if pkg.price %}{{ pkg.price|rupiah }}{% else %}Tanya dulu{% endif %}</dd></div>
+        <div><dt>Fitur tambahan</dt><dd id="sum-feat">{% if checked %}{% for f in checked %}{{ f }} (+{{ feature_prices[f]|rupiah }}){{ ', ' if not loop.last }}{% endfor %}{% else %}Belum ada{% endif %}</dd></div>
+        <div><dt>Total (mulai dari)</dt><dd id="sum-price" class="big">{% if pkg.price %}{{ (pkg.price + feat_total)|rupiah }}{% else %}Tanya dulu{% endif %}</dd></div>
       </dl>
       <button class="btn solid" type="submit">Lanjut ke WhatsApp</button>
-      <p class="fine">{{ info_icon() }}Belum ada yang dibayar. Kamu baru mengirim pesan, harga fitur tambahan dibahas di chat.</p>
+      <p class="fine">{{ info_icon() }}Belum ada yang dibayar. Kamu baru mengirim pesan, harga akhir dikonfirmasi di chat.</p>
     </aside>
   </form>
 </section>

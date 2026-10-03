@@ -336,14 +336,16 @@ SERVICE_DETAILS = {
 }
 
 # Pilihan fitur tambahan di form pemesanan (/pesan)
-FEATURE_OPTIONS = [
-    "Level dan XP",
-    "Clan",
-    "Chat global",
-    "Sistem premium",
-    "Download dan nonton offline",
-    "Notifikasi",
-]
+# Harga "mulai dari" tiap fitur tambahan (rupiah). Total di ringkasan dihitung dari sini.
+FEATURE_PRICES = {
+    "Level dan XP": 60_000,
+    "Clan": 150_000,
+    "Chat global": 120_000,
+    "Sistem premium": 100_000,
+    "Download dan nonton offline": 175_000,
+    "Notifikasi": 40_000,
+}
+FEATURE_OPTIONS = list(FEATURE_PRICES)
 COMMUNITY_FEATURES = ["Level dan XP", "Clan", "Chat global", "Sistem premium"]
 
 # Halaman detail karya (/karya/<slug>)
@@ -611,6 +613,8 @@ def pesan():
         jenis=jenis,
         selected=selected,
         features=FEATURE_OPTIONS,
+        feature_prices=FEATURE_PRICES,
+        feat_total=sum(FEATURE_PRICES[f] for f in checked),
         checked=checked,
     )
 
@@ -634,12 +638,18 @@ def pesan_kirim():
     nama = request.args.get("nama", "").strip()[:60]
     catatan = request.args.get("catatan", "").strip()[:600]
 
+    fitur_teks = (
+        ", ".join(f"{f} ({rupiah(FEATURE_PRICES[f])})" for f in fitur) if fitur else "belum ada"
+    )
     lines = [
         "Halo Dayynime, saya mau pesan:",
         f"- Jenis: {cat['label']}",
         f"- Paket: {pkg['name']} ({harga_teks})",
-        f"- Fitur tambahan: {', '.join(fitur) if fitur else 'belum ada'}",
+        f"- Fitur tambahan: {fitur_teks}",
     ]
+    if pkg["price"]:
+        total = pkg["price"] + sum(FEATURE_PRICES[f] for f in fitur)
+        lines.append(f"- Estimasi total: mulai dari {rupiah(total)}")
     if nama:
         lines.append(f"- Nama: {nama}")
     if catatan:

@@ -49,17 +49,22 @@
   // form pemesanan: ringkasan ikut berubah saat pilihan diganti
   const order = $('#order');
   if (order) {
-    const out = { kind: $('#sum-kind'), pkg: $('#sum-pkg'), price: $('#sum-price'), feat: $('#sum-feat') };
+    const out = { kind: $('#sum-kind'), pkg: $('#sum-pkg'), pkgPrice: $('#sum-pkg-price'), price: $('#sum-price'), feat: $('#sum-feat') };
     const rupiah = (n) => 'Rp' + Number(n).toLocaleString('id-ID');
     const sync = () => {
       const j = order.querySelector('input[name="jenis"]:checked');
       if (!j) return;
       const p = order.querySelector(`input[name="paket_${j.value}"]:checked`);
-      const feats = $$('input[name="fitur"]:checked', order).map((i) => i.value);
+      const feats = $$('input[name="fitur"]:checked', order);
+      const featTotal = feats.reduce((sum, i) => sum + Number(i.dataset.price || 0), 0);
+      const base = p && p.dataset.price ? Number(p.dataset.price) : null;
       out.kind.textContent = j.dataset.label;
       out.pkg.textContent = p ? p.dataset.name : '-';
-      out.price.textContent = p && p.dataset.price ? rupiah(p.dataset.price) : 'Tanya dulu';
-      out.feat.textContent = feats.length ? feats.join(', ') : 'Belum ada';
+      out.pkgPrice.textContent = base ? rupiah(base) : 'Tanya dulu';
+      out.price.textContent = base ? rupiah(base + featTotal) : 'Tanya dulu';
+      out.feat.textContent = feats.length
+        ? feats.map((i) => `${i.value} (+${rupiah(i.dataset.price)})`).join(', ')
+        : 'Belum ada';
     };
     order.addEventListener('change', sync);
     sync();

@@ -29,6 +29,9 @@
     <div class="pd-info">
       <span class="item-cat">{{ 'Aplikasi Android' if p.category == 'aplikasi' else 'Website' }}</span>
       <h1>{{ p.title }}</h1>
+      <ul class="facts facts-lg">
+        <li>{{ 'Pakai database' if p.db == 'database' else 'Tanpa database' }}</li>
+      </ul>
 
       <p class="price price-lg">
         {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}
@@ -44,7 +47,7 @@
         {{ btn(url_for('pesan', jenis='app' if p.category == 'aplikasi' else 'web'), 'Pesan yang serupa', 'ghost') }}
       </div>
       {% else %}
-      <p class="pd-status is-ok">Tersedia</p>
+      <p class="pd-status is-ok">Tersedia{% if p.stock > 1 %}, stok {{ p.stock }}{% endif %}</p>
       <div class="row">
         {{ btn(buy_link, 'Beli lewat WhatsApp', 'solid', True) }}
         {% if p.demo_url %}{{ btn(p.demo_url, 'Lihat demo', 'ghost', True) }}{% endif %}

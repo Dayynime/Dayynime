@@ -209,7 +209,7 @@ STEPS = [
 TRANSFER_STEPS = [
     ("Chat dan sepakati", "Hubungi lewat WhatsApp, tanyakan yang belum jelas, lalu sepakati harga."),
     ("Pembayaran", "Bayar sesuai harga yang disepakati dan kirim bukti pembayaran."),
-    ("Pindah kepemilikan", "Source code, akses hosting, dan database dipindahkan ke akunmu."),
+    ("Pindah kepemilikan", "Source code, akses hosting, dan database (jika ada) dipindahkan ke akunmu."),
     ("Ditandai terjual", "Setelah serah terima selesai, produk ditandai terjual dan tidak dijual lagi."),
 ]
 
@@ -714,7 +714,12 @@ def decorate(row):
     else:
         p["final_price"] = price
         p["percent"] = 0
-    p["sold"] = p.get("status") == "sold"
+    stock = p.get("stock")
+    if stock is None:  # kolom stock belum ada: produk tunggal
+        stock = 0 if p.get("status") == "sold" else 1
+    p["stock"] = max(0, int(stock))
+    p["db"] = "database" if p.get("db_type") == "database" else "none"
+    p["sold"] = p.get("status") == "sold" or p["stock"] <= 0
     p["images"] = p.get("images") or []
     return p
 
@@ -732,6 +737,9 @@ def katalog():
     jenis = request.args.get("jenis")
     if jenis not in ("website", "aplikasi"):
         jenis = None
+    db = request.args.get("db")
+    if db not in ("database", "none"):
+        db = None
     items, failed = [], False
     if supa.configured():
         try:
@@ -742,11 +750,15 @@ def katalog():
         "all": len(items),
         "website": sum(1 for p in items if p["category"] == "website"),
         "aplikasi": sum(1 for p in items if p["category"] == "aplikasi"),
+        "database": sum(1 for p in items if p["db"] == "database"),
+        "none": sum(1 for p in items if p["db"] == "none"),
     }
     if jenis:
         items = [p for p in items if p["category"] == jenis]
+    if db:
+        items = [p for p in items if p["db"] == db]
     page = render_template(
-        "katalog.html", items=items, jenis=jenis, failed=failed,
+        "katalog.html", items=items, jenis=jenis, db=db, failed=failed,
         counts=counts, steps=TRANSFER_STEPS,
     )
     return cached(make_response(page), ok=not failed)
@@ -833,6 +845,9 @@ def parse_product(form, existing=None):
     price_raw = form.get("price", "")
     disc_raw = form.get("discount_price", "")
     status = form.get("status", "available")
+    db_type = form.get("db_type", "none")
+    stock_raw = form.get("stock", "")
+    stock = parse_int(stock_raw)
     demo_url = form.get("demo_url", "").strip()[:300]
     buyer_note = form.get("buyer_note", "").strip()[:600]
     images = []
@@ -858,6 +873,15 @@ def parse_product(form, existing=None):
             errors.append("Harga diskon harus lebih kecil dari harga normal.")
     if status not in ("available", "sold"):
         status = "available"
+    if db_type not in ("none", "database"):
+        db_type = "none"
+    if stock is None:
+        stock = 0 if status == "sold" else 1
+    stock = min(stock, 9999)
+    if status == "sold":
+        stock = 0  # terjual = stok habis
+    elif stock < 1:
+        errors.append("Stok 0 berarti habis. Isi stok minimal 1, atau ubah status ke Terjual.")
     if demo_url and not re.match(r"^https?://", demo_url):
         errors.append("Link demo harus diawali http:// atau https://.")
 
@@ -868,6 +892,8 @@ def parse_product(form, existing=None):
         "price": price,
         "discount_price": discount,
         "status": status,
+        "stock": stock,
+        "db_type": db_type,
         "demo_url": demo_url or None,
         "buyer_note": buyer_note or None,
         "images": images,
@@ -885,6 +911,8 @@ def parse_product(form, existing=None):
         "price": price_raw,
         "discount_price": disc_raw,
         "status": status,
+        "stock": stock_raw if stock_raw.strip() else stock,
+        "db_type": db_type,
         "demo_url": demo_url,
         "buyer_note": buyer_note,
         "images": images,
@@ -948,8 +976,8 @@ def _form_page(product, values, errors):
 
 EMPTY_VALUES = {
     "title": "", "category": "aplikasi", "description": "", "price": "",
-    "discount_price": "", "status": "available", "demo_url": "",
-    "buyer_note": "", "images": [],
+    "discount_price": "", "status": "available", "stock": 1, "db_type": "none",
+    "demo_url": "", "buyer_note": "", "images": [],
 }
 
 
@@ -993,6 +1021,8 @@ def admin_edit(pid):
             "price": product["price"],
             "discount_price": product.get("discount_price") or "",
             "status": product["status"],
+            "stock": product["stock"] if product.get("stock") is not None else (0 if product["status"] == "sold" else 1),
+            "db_type": product.get("db_type") or "none",
             "demo_url": product.get("demo_url") or "",
             "buyer_note": product.get("buyer_note") or "",
             "images": product.get("images") or [],
@@ -1015,10 +1045,26 @@ def admin_status(pid):
     status = request.form.get("status")
     if status not in ("available", "sold"):
         abort(400)
-    sold_at = datetime.now(timezone.utc).isoformat() if status == "sold" else None
     try:
-        supa.update(pid, {"status": status, "sold_at": sold_at})
-        flash("Ditandai terjual." if status == "sold" else "Ditandai tersedia lagi.")
+        product = supa.get_admin(pid)
+        if product is None:
+            abort(404)
+        stock = product.get("stock")
+        if stock is None:
+            stock = 0 if product.get("status") == "sold" else 1
+        if status == "sold" and product.get("status") != "sold" and stock > 1:
+            # stok lebih dari 1: catat satu terjual, produk tetap tersedia
+            supa.update(pid, {"stock": stock - 1})
+            flash(f"Terjual 1. Sisa stok {stock - 1}.")
+        elif status == "sold":
+            supa.update(pid, {
+                "status": "sold", "stock": 0,
+                "sold_at": datetime.now(timezone.utc).isoformat(),
+            })
+            flash("Ditandai terjual.")
+        else:
+            supa.update(pid, {"status": "available", "stock": max(stock, 1), "sold_at": None})
+            flash("Ditandai tersedia lagi.")
     except supa.StoreError as err:
         flash(f"Gagal mengubah status: {err}")
     return redirect(url_for("admin_index"))

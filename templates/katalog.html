@@ -9,7 +9,7 @@
   <p class="sub">Aplikasi dan website yang sudah jadi. Pilih satu, beli, dan kepemilikannya pindah ke kamu.</p>
   <ul class="ticks kat-points">
     <li>{{ tick() }}Source code pindah ke akunmu</li>
-    <li>{{ tick() }}Akses hosting dan database ikut dipindahkan</li>
+    <li>{{ tick() }}Akses hosting dan database (jika ada) ikut dipindahkan</li>
     <li>{{ tick() }}Beli dan tanya langsung lewat WhatsApp</li>
   </ul>
 </section>
@@ -17,10 +17,17 @@
 <section class="sec wrap">
   <div class="cat-bar">
     <ul class="pills pills-lg cat-tabs" aria-label="Filter jenis produk">
-      <li><a href="{{ url_for('katalog') }}"{% if not jenis %} aria-current="true"{% endif %}>Semua<span class="cnt">{{ counts.all }}</span></a></li>
-      <li><a href="{{ url_for('katalog', jenis='website') }}"{% if jenis == 'website' %} aria-current="true"{% endif %}>Website<span class="cnt">{{ counts.website }}</span></a></li>
-      <li><a href="{{ url_for('katalog', jenis='aplikasi') }}"{% if jenis == 'aplikasi' %} aria-current="true"{% endif %}>Aplikasi<span class="cnt">{{ counts.aplikasi }}</span></a></li>
+      <li><a href="{{ url_for('katalog', db=db) }}"{% if not jenis %} aria-current="true"{% endif %}>Semua<span class="cnt">{{ counts.all }}</span></a></li>
+      <li><a href="{{ url_for('katalog', jenis='website', db=db) }}"{% if jenis == 'website' %} aria-current="true"{% endif %}>Website<span class="cnt">{{ counts.website }}</span></a></li>
+      <li><a href="{{ url_for('katalog', jenis='aplikasi', db=db) }}"{% if jenis == 'aplikasi' %} aria-current="true"{% endif %}>Aplikasi<span class="cnt">{{ counts.aplikasi }}</span></a></li>
     </ul>
+    {% if counts.database and counts.none %}
+    <ul class="pills db-tabs" aria-label="Filter database">
+      <li><a href="{{ url_for('katalog', jenis=jenis) }}"{% if not db %} aria-current="true"{% endif %}>Semua tipe</a></li>
+      <li><a href="{{ url_for('katalog', jenis=jenis, db='database') }}"{% if db == 'database' %} aria-current="true"{% endif %}>Pakai database</a></li>
+      <li><a href="{{ url_for('katalog', jenis=jenis, db='none') }}"{% if db == 'none' %} aria-current="true"{% endif %}>Tanpa database</a></li>
+    </ul>
+    {% endif %}
   </div>
 
   {% if failed %}
@@ -53,6 +60,10 @@
           </p>
           <h3>{{ p.title }}</h3>
           {% if p.description %}<p class="pc-desc">{{ p.description }}</p>{% endif %}
+          <ul class="facts">
+            <li>{{ 'Pakai database' if p.db == 'database' else 'Tanpa database' }}</li>
+            {% if not p.sold and p.stock > 1 %}<li>Stok {{ p.stock }}</li>{% endif %}
+          </ul>
           <div class="pc-foot">
             <p class="price">
               {% if p.percent and not p.sold %}<s>{{ p.price|rupiah }}</s>{% endif %}

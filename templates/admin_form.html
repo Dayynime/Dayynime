@@ -35,8 +35,23 @@
         <label for="status">Status</label>
         <select id="status" name="status">
           <option value="available"{% if values.status == 'available' %} selected{% endif %}>Tersedia</option>
-          <option value="sold"{% if values.status == 'sold' %} selected{% endif %}>Terjual</option>
+          <option value="sold"{% if values.status == 'sold' %} selected{% endif %}>Terjual / habis</option>
         </select>
+      </div>
+    </div>
+
+    <div class="adm-two">
+      <div class="field">
+        <label for="db_type">Database</label>
+        <select id="db_type" name="db_type">
+          <option value="none"{% if values.db_type != 'database' %} selected{% endif %}>Tanpa database</option>
+          <option value="database"{% if values.db_type == 'database' %} selected{% endif %}>Pakai database</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="stock">Stok</label>
+        <input id="stock" name="stock" inputmode="numeric" value="{{ values.stock }}" placeholder="1">
+        <p class="hint">Jumlah yang masih dijual. Kalau sudah habis, ubah status ke Terjual.</p>
       </div>
     </div>
 

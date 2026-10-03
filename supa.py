@@ -16,10 +16,11 @@ SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
 TABLE = "products"
 
 # Kolom untuk halaman publik. Sengaja tidak memuat buyer_note (catatan internal admin).
-PUBLIC_COLS = (
+PUBLIC_COLS_BASE = (
     "id,slug,title,category,description,price,discount_price,"
     "status,images,demo_url,created_at"
 )
+PUBLIC_COLS = PUBLIC_COLS_BASE + ",stock,db_type"
 UUID_RE = re.compile(r"^[0-9a-fA-F-]{36}$")
 
 
@@ -61,17 +62,24 @@ def _request(method, params=None, body=None, prefer=None, timeout=8):
     return json.loads(raw) if raw else None
 
 
+def _public(params, timeout=8):
+    """Baca produk publik. Kalau kolom stock/db_type belum ada (SQL migrasi belum dijalankan),
+    ulangi dengan kolom lama supaya situs tetap tampil."""
+    try:
+        return _request("GET", {**params, "select": PUBLIC_COLS}, timeout=timeout) or []
+    except StoreError as err:
+        if "stock" not in str(err) and "db_type" not in str(err):
+            raise
+        return _request("GET", {**params, "select": PUBLIC_COLS_BASE}, timeout=timeout) or []
+
+
 def list_public(timeout=8):
     """Semua produk untuk publik: yang masih tersedia di atas, lalu yang terjual."""
-    return _request(
-        "GET",
-        {"select": PUBLIC_COLS, "order": "status.asc,created_at.desc"},
-        timeout=timeout,
-    ) or []
+    return _public({"order": "status.asc,created_at.desc"}, timeout=timeout)
 
 
 def get_public(slug):
-    rows = _request("GET", {"select": PUBLIC_COLS, "slug": f"eq.{slug}", "limit": "1"})
+    rows = _public({"slug": f"eq.{slug}", "limit": "1"})
     return rows[0] if rows else None
 
 

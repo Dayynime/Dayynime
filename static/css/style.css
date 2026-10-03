@@ -564,7 +564,7 @@ a.inline:hover{color:var(--text)}
 @media(min-width:900px){.pd-info{position:sticky;top:92px}}
 
 /* panel beli: harga, spesifikasi, tombol */
-.buy{padding:clamp(20px,4vw,28px);border-radius:20px;border:1px solid var(--line-2);background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+.buy{padding:0}
 .buy-price{display:grid;gap:8px}
 .buy-price strong{font-family:var(--head);font-weight:700;font-size:clamp(2.1rem,6vw,2.7rem);letter-spacing:-.04em;line-height:1}
 .buy-was{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
